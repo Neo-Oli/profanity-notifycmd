@@ -38,7 +38,7 @@ Plugin for Profanity to launch a custom shell command when a message is received
 
 `/notifycmd rooms on|off`
 
-### Enable/Disable vibration
+### Set command to exectue
 
 `/notifycmd command <command>`
 
@@ -55,7 +55,7 @@ Set command to execute. You can use the following markers:
 You'll need [Termux:API](https://play.google.com/store/apps/details?id=com.termux.api) and the termux-api package (`apt install termux-api`).
 
 ```
-/notifycmd command termux-notification -t "New message from #s" -c "#m";termux-vibrate
+/notifycmd command termux-notification -t "Profanity: #s says:" -c "#m";termux-vibrate
 ```
 ![Screenshot](screenshot.png)
 
