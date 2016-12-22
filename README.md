@@ -44,9 +44,9 @@ Plugin for Profanity to launch a custom shell command when a message is received
 
 Set command to execute. You can use the following markers:
 
- * \%s -> sender
- * \%m -> message
- * \%\% -> literal %
+ * %s -> sender
+ * %m -> message
+ * %% -> literal %
 
 
 ### Command Examples
