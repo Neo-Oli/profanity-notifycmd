@@ -44,9 +44,9 @@ Plugin for Profanity to launch a custom shell command when a message is received
 
 Set command to execute. You can use the following markers:
 
- * \#s -> sender
- * \#m -> message
- * \#\# -> literal #
+ * \%s -> sender
+ * \%m -> message
+ * \%\% -> literal %
 
 
 ### Command Examples
@@ -55,13 +55,13 @@ Set command to execute. You can use the following markers:
 You'll need [Termux:API](https://play.google.com/store/apps/details?id=com.termux.api) and the termux-api package (`apt install termux-api`).
 
 ```
-/notifycmd command termux-notification -t "Profanity: #s says:" -c "#m";termux-vibrate
+/notifycmd command termux-notification -t "Profanity: %s says:" -c "%m";termux-vibrate
 ```
 ![Screenshot](screenshot.png)
 
 #### Send an Email as a notification
 
 ```
-/notifycmd plugin command set to: echo "#m" | mutt -s "New message from #s" name@domain.tld
+/notifycmd plugin command set to: echo "%m" | mutt -s "New message from %s" name@domain.tld
 ```
 
