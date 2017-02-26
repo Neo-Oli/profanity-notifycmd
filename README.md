@@ -48,6 +48,7 @@ Set command to execute. You can use the following markers:
  * %m -> message
  * %% -> literal %
 
+Warning: For security reasons all quotes (') get replaced by ’ and the string is quotes with ''. Do not quote the string yoursels.Use `echo %m>>~/log` insead of `echo '%m'>>~/log` for example. Doing the latter would allow remote code execution. 
 
 ### Command Examples
 

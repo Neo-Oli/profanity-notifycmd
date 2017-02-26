@@ -3,9 +3,14 @@ Executes a command when a message is received
 """
 
 import prof
-import os
+from subprocess import Popen
 import time
 from sys import platform
+
+def secure(string):
+    string=string.replace("'","’")
+    string="'{}'".format(string)
+    return string
 
 def notifycmd(sender,message):
     command = prof.settings_string_get("notifycmd", "command", "")
@@ -16,10 +21,12 @@ def notifycmd(sender,message):
 
 
     command = command.replace("{percentreplace}","%")
-    command = command.replace("{senderreplace}",sender)
-    command = command.replace("{messagereplace}",message)
-
-    os.system(command)
+    command = command.replace("{senderreplace}",secure(sender))
+    command = command.replace("{messagereplace}",secure(message))
+    command = command.replace("{unsecuresenderreplace}",sender)
+    command = command.replace("{unsecuremessagereplace}",message)
+    
+    p = Popen(['sh', '-c', command])
 
 def prof_post_chat_message_display(barejid, resource, message):
     enabled = prof.settings_string_get("notifycmd", "enabled", "on")
@@ -49,7 +56,7 @@ def prof_post_priv_message_display(barejid, nick, message):
     return message
 
 
-def _cmd_say(arg1=None, arg2=None):
+def _cmd_notifycmd(arg1=None, arg2=None):
     if arg1 == "on":
         prof.settings_string_set("notifycmd", "enabled", "on")
         prof.cons_show("Notifycmd plugin enabled")
@@ -90,11 +97,11 @@ def prof_init(version, status, account_name, fulljid):
     args = [
         [ "on|off",      "Enable/disable notifycmd for all windows" ],
         [ "active",      "Enable notifycmd for active window only" ],
-        [ "command <args>",    "Set command to execute. Replaces %s with sender, %m with message and %% with literal %" ],
+        [ "command <args>",    "Set command to execute. Replaces %s with sender, %m with message and %% with literal %." ],
         [ "rooms <args>",    "Turn notifycmd for rooms on or off" ]
     ]
     examples = []
 
-    prof.register_command("/notifycmd", 0, 2, synopsis, description, args, examples, _cmd_say)
+    prof.register_command("/notifycmd", 0, 2, synopsis, description, args, examples, _cmd_notifycmd)
     prof.completer_add("/notifycmd", [ "on", "off","active","command","rooms" ])
     prof.completer_add("/notifycmd rooms", [ "on", "off" ])
