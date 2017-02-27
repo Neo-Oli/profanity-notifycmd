@@ -25,9 +25,7 @@ def notifycmd(sender,message):
 
 
     command = command.replace("{percentreplace}","%")
-    command = "senderreplace=\"{}\";messagereplace=\"{}\";{}".format(secure(sender),secure(message),command)
-
-    print(command)
+    command = "set -f;senderreplace=\"{}\";messagereplace=\"{}\";{}".format(secure(sender),secure(message),command)
     p = Popen(['sh', '-c', command])
 
 def prof_post_chat_message_display(barejid, resource, message):
