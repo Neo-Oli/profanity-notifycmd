@@ -11,6 +11,7 @@ from sys import platform
 
 def secure(string):
     string=string.replace("'","’")
+    string=string.replace('\\','\\\\')
     return string
 
 def notifycmd(sender,message):
