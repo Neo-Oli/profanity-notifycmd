@@ -48,7 +48,7 @@ Set command to execute. You can use the following markers:
  * %m -> message
  * %% -> literal %
 
-Warning: For security reasons all quotes (') get replaced by ’. You should put all your markers in single quotes. Without doing this you're potentially vulnerable to remote code execution. 
+Warning: You can't use single quotes around markers in commands, because the markers get converted into shell variables. So a command like this `echo "%s: %m>>~/log` will actually result in `senderreplace='<sender>';messagereplace='<message>';echo "${senderreplace}: ${messagereplace}" >> ~/log`. This is for security reasons and prevents remote code execution.
 
 ### Command Examples
 

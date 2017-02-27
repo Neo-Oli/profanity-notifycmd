@@ -10,7 +10,7 @@ import time
 from sys import platform
 
 def secure(string):
-    string=string.replace("'","’")
+    string=string.replace("'","\'")
     string=string.replace('\\','\\\\')
     return string
 
@@ -18,16 +18,14 @@ def notifycmd(sender,message):
     command = prof.settings_string_get("notifycmd", "command", "")
     # replace markers with complex strings first to avoid "%%mittens"=>"(%%)mittens"=>"(%m)ittens"=>"<message>ittens" but rather do "(%%)mittens"=>"%mittens"
     command = command.replace("%%","{percentreplace}")
-    command = command.replace("%s","{senderreplace}")
-    command = command.replace("%m","{messagereplace}")
+    command = command.replace("%s","${senderreplace}")
+    command = command.replace("%m","${messagereplace}")
 
 
     command = command.replace("{percentreplace}","%")
-    command = command.replace("{senderreplace}",secure(sender))
-    command = command.replace("{messagereplace}",secure(message))
-    command = command.replace("{unsecuresenderreplace}",sender)
-    command = command.replace("{unsecuremessagereplace}",message)
-    
+    command = "senderreplace='{}';messagereplace='{}';{}".format(secure(sender),secure(message),command)
+
+    print(command)
     p = Popen(['sh', '-c', command])
 
 def prof_post_chat_message_display(barejid, resource, message):
