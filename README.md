@@ -48,7 +48,7 @@ Set command to execute. You can use the following markers:
  * %m -> message
  * %% -> literal %
 
-Warning: For security reasons all quotes (') get replaced by ’ and the string is quotes with ''. Do not quote the string yoursels.Use `echo %m>>~/log` insead of `echo '%m'>>~/log` for example. Doing the latter would allow remote code execution. 
+Warning: For security reasons all quotes (') get replaced by ’. You should put all your markers in single quotes. Without doing this you're potentially vulnerable to remote code execution. 
 
 ### Command Examples
 
@@ -56,13 +56,13 @@ Warning: For security reasons all quotes (') get replaced by ’ and the string 
 You'll need [Termux:API](https://play.google.com/store/apps/details?id=com.termux.api) and the termux-api package (`apt install termux-api`).
 
 ```
-/notifycmd command termux-notification -t "Profanity: %s says:" -c "%m";termux-vibrate
+/notifycmd command termux-notification -t 'Profanity: %s says:' -c '%m' --vibrate 500,100,500
 ```
 ![Screenshot](screenshot.png)
 
 #### Send an Email as a notification
 
 ```
-/notifycmd plugin command set to: echo "%m" | mutt -s "New message from %s" name@domain.tld
+/notifycmd plugin command set to: echo '%m' | mutt -s 'New message from %s' name@domain.tld
 ```
 

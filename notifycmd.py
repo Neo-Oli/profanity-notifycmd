@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 """
 Executes a command when a message is received
 """
@@ -9,7 +11,6 @@ from sys import platform
 
 def secure(string):
     string=string.replace("'","’")
-    string="'{}'".format(string)
     return string
 
 def notifycmd(sender,message):
