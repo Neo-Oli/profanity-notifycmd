@@ -10,8 +10,10 @@ import time
 from sys import platform
 
 def secure(string):
-    string=string.replace("'","\'")
     string=string.replace('\\','\\\\')
+    string=string.replace("\"","\\\"")
+    string=string.replace("$","\$")
+    string=string.replace("`","\`")
     return string
 
 def notifycmd(sender,message):
@@ -23,7 +25,7 @@ def notifycmd(sender,message):
 
 
     command = command.replace("{percentreplace}","%")
-    command = "senderreplace='{}';messagereplace='{}';{}".format(secure(sender),secure(message),command)
+    command = "senderreplace=\"{}\";messagereplace=\"{}\";{}".format(secure(sender),secure(message),command)
 
     print(command)
     p = Popen(['sh', '-c', command])
