@@ -34,9 +34,14 @@ Plugin for Profanity to launch a custom shell command when a message is received
 
 `/notifycmd active`
 
-### Enable/Disable notifications for all messages in rooms
+### Enable/Disable notifycmd for messages in rooms
 
-`/notifycmd rooms on|off`
+`/notifycmd rooms on|off|mention`
+
+Default: `mention`
+`on: Runs for all messages
+`mention`: Run only for messages that contain your nick
+`off`: Don't run in rooms
 
 ### Set command to exectue
 
