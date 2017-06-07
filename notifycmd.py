@@ -46,8 +46,8 @@ def prof_post_room_message_display(barejid, nick, message):
         elif enabled == "active" and current_muc == barejid:
             notifycmd(nick, message)
     elif rooms == "mention":
-        nick = prof.get_room_nick(barejid)
-        if nick in message:
+        mynick = prof.get_room_nick(barejid)
+        if mynick in message:
             if enabled == "on":
                 notifycmd(nick, message)
             elif enabled == "active" and current_muc == barejid:
