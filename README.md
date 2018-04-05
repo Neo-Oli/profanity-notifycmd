@@ -34,9 +34,14 @@ Plugin for Profanity to launch a custom shell command when a message is received
 
 `/notifycmd active`
 
-### Enable/Disable notifications for all messages in rooms
+### Enable/Disable notifycmd for messages in rooms
 
-`/notifycmd rooms on|off`
+`/notifycmd rooms on|off|mention`
+
+Default: `mention`
+`on: Runs for all messages
+`mention`: Run only for messages that contain your nick
+`off`: Don't run in rooms
 
 ### Set command to exectue
 
@@ -48,6 +53,7 @@ Set command to execute. You can use the following markers:
  * %m -> message
  * %% -> literal %
 
+Warning: You can't use single quotes around markers in commands, because the markers get converted into shell variables. So a command like this `echo "%s: %m>>~/log` will actually result in `senderreplace='<sender>';messagereplace='<message>';echo "${senderreplace}: ${messagereplace}" >> ~/log`. This is for security reasons and prevents remote code execution.
 
 ### Command Examples
 
@@ -55,13 +61,13 @@ Set command to execute. You can use the following markers:
 You'll need [Termux:API](https://play.google.com/store/apps/details?id=com.termux.api) and the termux-api package (`apt install termux-api`).
 
 ```
-/notifycmd command termux-notification -t "Profanity: %s says:" -c "%m";termux-vibrate
+/notifycmd command termux-notification -t 'Profanity: %s says:' -c '%m' --vibrate 500,100,500
 ```
 ![Screenshot](screenshot.png)
 
 #### Send an Email as a notification
 
 ```
-/notifycmd plugin command set to: echo "%m" | mutt -s "New message from %s" name@domain.tld
+/notifycmd plugin command set to: echo '%m' | mutt -s 'New message from %s' name@domain.tld
 ```
 

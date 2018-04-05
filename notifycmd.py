@@ -1,25 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 """
 Executes a command when a message is received
 """
 
 import prof
-import os
+from subprocess import Popen
 import time
 from sys import platform
+
+def secure(string):
+    string=string.replace('\\','\\\\')
+    string=string.replace("\"","\\\"")
+    string=string.replace("$","\$")
+    string=string.replace("`","\`")
+    return string
 
 def notifycmd(sender,message):
     command = prof.settings_string_get("notifycmd", "command", "")
     # replace markers with complex strings first to avoid "%%mittens"=>"(%%)mittens"=>"(%m)ittens"=>"<message>ittens" but rather do "(%%)mittens"=>"%mittens"
     command = command.replace("%%","{percentreplace}")
-    command = command.replace("%s","{senderreplace}")
-    command = command.replace("%m","{messagereplace}")
+    command = command.replace("%s","${senderreplace}")
+    command = command.replace("%m","${messagereplace}")
 
 
     command = command.replace("{percentreplace}","%")
-    command = command.replace("{senderreplace}",sender)
-    command = command.replace("{messagereplace}",message)
-
-    os.system(command)
+    command = "set -f;senderreplace=\"{}\";messagereplace=\"{}\";{}".format(secure(sender),secure(message),command)
+    p = Popen(['sh', '-c', command])
 
 def prof_post_chat_message_display(barejid, resource, message):
     enabled = prof.settings_string_get("notifycmd", "enabled", "on")
@@ -31,14 +38,20 @@ def prof_post_chat_message_display(barejid, resource, message):
 
 def prof_post_room_message_display(barejid, nick, message):
     enabled = prof.settings_string_get("notifycmd", "enabled", "on")
-    rooms = prof.settings_string_get("notifycmd", "rooms", "off")
+    rooms = prof.settings_string_get("notifycmd", "rooms", "mention")
     current_muc = prof.get_current_muc()
     if rooms == "on":
         if enabled == "on":
             notifycmd(nick + " in " + barejid, message)
         elif enabled == "active" and current_muc == barejid:
             notifycmd(nick, message)
-
+    elif rooms == "mention":
+        mynick = prof.get_room_nick(barejid)
+        if mynick in message:
+            if enabled == "on":
+                notifycmd(nick, message)
+            elif enabled == "active" and current_muc == barejid:
+                notifycmd(nick, message)
     return message
 
 
@@ -49,7 +62,7 @@ def prof_post_priv_message_display(barejid, nick, message):
     return message
 
 
-def _cmd_say(arg1=None, arg2=None):
+def _cmd_notifycmd(arg1=None, arg2=None):
     if arg1 == "on":
         prof.settings_string_set("notifycmd", "enabled", "on")
         prof.cons_show("Notifycmd plugin enabled")
@@ -73,7 +86,7 @@ def _cmd_say(arg1=None, arg2=None):
             prof.cons_show("notifycmd plugin notifications for rooms set to: " + arg2)
     else:
         enabled = prof.settings_string_get("notifycmd", "enabled", "on")
-        rooms = prof.settings_string_get("notifycmd", "rooms", "off")
+        rooms = prof.settings_string_get("notifycmd", "rooms", "mention")
         command = prof.settings_string_get("notifycmd", "command", "")
         prof.cons_show("Notifycmd plugin settings:")
         prof.cons_show("enabled : " + enabled)
@@ -84,17 +97,17 @@ def prof_init(version, status, account_name, fulljid):
     synopsis = [
         "/notifycmd on|off|active",
         "/notifycmd command <command>",
-        "/notifycmd rooms on|off"
+        "/notifycmd rooms on|off|mention"
     ]
     description = "Executes a command when a message is received"
     args = [
         [ "on|off",      "Enable/disable notifycmd for all windows" ],
         [ "active",      "Enable notifycmd for active window only" ],
-        [ "command <args>",    "Set command to execute. Replaces %s with sender, %m with message and %% with literal %" ],
-        [ "rooms <args>",    "Turn notifycmd for rooms on or off" ]
+        [ "command <args>",    "Set command to execute. Replaces %s with sender, %m with message and %% with literal %." ],
+        [ "rooms <args>",    "Setting for multi-user rooms. Set to 'on', 'off' or 'mention'. If set to mention it will only run it your nick was mentioned." ]
     ]
     examples = []
 
-    prof.register_command("/notifycmd", 0, 2, synopsis, description, args, examples, _cmd_say)
+    prof.register_command("/notifycmd", 0, 2, synopsis, description, args, examples, _cmd_notifycmd)
     prof.completer_add("/notifycmd", [ "on", "off","active","command","rooms" ])
-    prof.completer_add("/notifycmd rooms", [ "on", "off" ])
+    prof.completer_add("/notifycmd rooms", [ "on", "off", "mention" ])
