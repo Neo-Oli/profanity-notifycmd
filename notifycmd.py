@@ -40,18 +40,20 @@ def prof_post_room_message_display(barejid, nick, message):
     enabled = prof.settings_string_get("notifycmd", "enabled", "on")
     rooms = prof.settings_string_get("notifycmd", "rooms", "mention")
     current_muc = prof.get_current_muc()
-    if rooms == "on":
-        if enabled == "on":
-            notifycmd(nick + " in " + barejid, message)
-        elif enabled == "active" and current_muc == barejid:
-            notifycmd(nick, message)
-    elif rooms == "mention":
-        mynick = prof.get_room_nick(barejid)
-        if mynick in message:
+    mynick = prof.get_room_nick(barejid)
+    # Don't notify for ones own messages
+    if nick != mynick:
+        if rooms == "on":
             if enabled == "on":
-                notifycmd(nick, message)
+                notifycmd(nick + " in " + barejid, message)
             elif enabled == "active" and current_muc == barejid:
                 notifycmd(nick, message)
+        elif rooms == "mention":
+            if mynick in message:
+                if enabled == "on":
+                    notifycmd(nick, message)
+                elif enabled == "active" and current_muc == barejid:
+                    notifycmd(nick, message)
     return message
 
 
